@@ -73,6 +73,22 @@ class ImgFigure extends React.Component {
         )
     }
 }
+
+
+class ControllerUnit extends React.Component {
+    handleClick(e) {
+
+        e.preventDefault()
+        e.stopPropagation()
+    }
+    render() {
+        return (
+            <span className="controller-unit" onClick={this.handleClick.bind(this)}></span>
+        )
+    }
+}
+
+
 class AppComponent extends React.Component {
     Constant = {
         centerPos: {
@@ -252,8 +268,8 @@ class AppComponent extends React.Component {
     }
 
     render() {
-        // let controllerUnits = []
         let ImgFigures = []
+        let controllerUnits = []
 
         imageDatas.forEach( (value, index) => {
             if(!this.state.imgsArrangeArr[index]) {
@@ -277,6 +293,7 @@ class AppComponent extends React.Component {
                     center={this.center(index)}
                 ></ImgFigure>
             )
+            controllerUnits.push(<ControllerUnit/>)
         })
         console.log(this.state)
         console.log(this.state.imgsArrangeArr, 'render')
@@ -286,7 +303,7 @@ class AppComponent extends React.Component {
                     {ImgFigures}
                 </section>
                 <nav className="controller-nav">
-
+                    {controllerUnits}
                 </nav>
             </section>
         );
