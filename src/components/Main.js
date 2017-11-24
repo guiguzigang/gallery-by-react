@@ -53,8 +53,8 @@ class ImgFigure extends React.Component {
 
         // 如果图片的旋转角度有值并且不为0，添加旋转角度
         if(this.props.arrange.rotate) {
-            (['MozT', 'msT', 'WebkitT', 't']).forEach( value => {
-                styleObj[value + 'ransform'] = `rotate(${this.props.arrange.rotate}deg)`
+            (['MozTransform', 'msTransform', 'WebkitTransform', 'transform']).forEach( value => {
+                styleObj[value] = `rotate(${this.props.arrange.rotate}deg)`
             })
         }
         let imgFigureClassName = 'img-figure'
@@ -77,13 +77,30 @@ class ImgFigure extends React.Component {
 
 class ControllerUnit extends React.Component {
     handleClick(e) {
-
+        // 如果点击的是当前选中态的按钮，则翻转图片，否则将对应的图片居中
+        if(this.props.arrange.isCenter) {
+            this.props.inverse()
+        } else {
+            this.props.center()
+        }
         e.preventDefault()
         e.stopPropagation()
     }
     render() {
+        let controllerUnitClassName = 'controller-unit'
+        // 如果对应的是居中的图片，显示控制按钮的居中态
+        if(this.props.arrange.isCenter) {
+            controllerUnitClassName += ' is-center'
+
+            // 如果同时对应的是翻转图片，显示控制按钮的翻转态
+            if(this.props.arrange.isInverse) {
+                controllerUnitClassName += ' is-inverse'
+            }
+        }
+
+
         return (
-            <span className="controller-unit" onClick={this.handleClick.bind(this)}></span>
+            <span className={controllerUnitClassName} onClick={this.handleClick.bind(this)}></span>
         )
     }
 }
@@ -158,7 +175,7 @@ class AppComponent extends React.Component {
             halfStageW = Math.ceil(stageW / 2),
             halfStageH = Math.ceil(stageH / 2);
         // 拿到一个imageFigure的大小
-        console.log(stageW, stageH, 'sfasdfasfasfasfasdfas', this.refs.stage, this.imgFigure0, ReactDOM.findDOMNode(this.imgFigure0))
+        // console.log(stageW, stageH, 'sfasdfasfasfasfasdfas', this.refs.stage, this.imgFigure0, ReactDOM.findDOMNode(this.imgFigure0))
         // let imgFigureDOM = this.refs.imgFigure0,
         let imgFigureDOM = ReactDOM.findDOMNode(this.imgFigure0),
             imgW = imgFigureDOM.scrollWidth,
@@ -167,7 +184,7 @@ class AppComponent extends React.Component {
             halfImgH = Math.ceil(imgH / 2);
         // console.log( this.refs.imgFigure0, stageW, stageH, 'sfasdfasfasfasfasdfas', halfImgW, imgH, halfImgH)
         // 计算中心图片的位置点
-        console.log(this.Constant)
+        // console.log(this.Constant)
         this.Constant.centerPos = {
             left: halfStageW - halfImgW,
             top: halfStageH - halfImgH
@@ -208,7 +225,7 @@ class AppComponent extends React.Component {
             vPosRangeX = vPosRange.x,
 
             imgsArrangeTopArr = [],
-            topImgNum = Math.ceil(Math.random() * 2),// 取一个或者不取
+            topImgNum = Math.floor(Math.random() * 2),// 取一个或者不取
             topImgSpliceIndex = 0,
             imgsArrangeCenterArr = imgsArrangeArr.splice(centerIndex, 1);
         console.log(imgsArrangeArr, imgsArrangeCenterArr)
@@ -255,7 +272,7 @@ class AppComponent extends React.Component {
                 isCenter: false,
             }
         }
-
+        // debugger;
         if(imgsArrangeTopArr && imgsArrangeTopArr[0]) {
             imgsArrangeArr.splice(topImgSpliceIndex, 0, imgsArrangeTopArr[0])
         }
@@ -293,7 +310,12 @@ class AppComponent extends React.Component {
                     center={this.center(index)}
                 ></ImgFigure>
             )
-            controllerUnits.push(<ControllerUnit/>)
+            controllerUnits.push(
+                <ControllerUnit arrange={this.state.imgsArrangeArr[index]}
+                    key={value.fileName}
+                    inverse={this.inverse(index)}
+                    center={this.center(index)}/>
+            )
         })
         console.log(this.state)
         console.log(this.state.imgsArrangeArr, 'render')
